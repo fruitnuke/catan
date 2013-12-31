@@ -1,0 +1,84 @@
+This project was originally stored in a mercurial repo that contains several
+small scripts and projects. Because the repo, and therefore the commit graph,
+includes other scripts it's not straightforward to convert to git. I therefore
+ported the script as-is, and include the original commit log here for posterity.
+
+-------------------------------------------------------------------------------
+
+changeset:   19:1b3c1eb4fc64
+tag:         tip
+user:        Dan Boswell <dan@amygda.la>
+date:        Sun Apr 21 15:11:02 2013 +0900
+
+Now uses a fixed connected path around the graph (as defined in the Catan
+manual) so don't need to work a way to traverse the graph that visits every
+node.  Add docstrings and a basic test.
+
+changeset:   18:d370e6aa882e
+user:        Dan Boswell <dan@amygda.la>
+date:        Sun Apr 21 14:15:13 2013 +0900
+
+Separate out tkinter vars from the board options
+
+changeset:   17:46bb067d4484
+user:        Dan Boswell <dan@amygda.la>
+date:        Fri Apr 19 22:42:18 2013 +0900
+
+Correct the color of the wheat port, default to randomize
+
+changeset:   16:36a339cee37c
+user:        Dan Boswell <dan@amygda.la>
+date:        Tue Apr 09 08:55:04 2013 +0900
+
+Color ports and make randomization optional. Color the canvas
+background. Refactor the Options class and autogenerate the checkboxes from the
+available options.
+
+changeset:   15:a1cf6e0577db
+user:        Dan Boswell <dan@amygda.la>
+date:        Tue Apr 09 07:36:30 2013 +0900
+
+Use namedtuple instead of hand-rolled class for tiles (plus whitespace cleanup)
+
+changeset:   14:868225403131
+user:        Dan Boswell <dan@amygda.la>
+date:        Sat Apr 06 13:54:36 2013 +0900
+
+Add the fair nubmer algorithm
+
+changeset:   13:b7523e008c17
+user:        Dan Boswell <dan@amygda.la>
+date:        Fri Apr 05 00:12:16 2013 +0900
+
+Change the tile order to be the same as given in the Catan manual - starting
+from the top-left corner and circling counter-clockwise from the outside in.
+Adjust the ports similarly, and draw them as triangles instead of hexes.  Adjust
+colors.  Change the number list so it's in the order given by the game (ie A-R),
+ready for use unshuffled in the fair-number algorithm.
+
+changeset:   12:26ec0a9722af
+user:        Dan Boswell <dan@amygda.la>
+date:        Fri Mar 29 00:35:33 2013 +0900
+
+Very basic rendering of port tiles.
+
+changeset:   11:208176a1b29f
+user:        Dan Boswell <dan@amygda.la>
+date:        Thu Mar 28 00:09:24 2013 +0900
+
+Numerous improvements
+
+1. Better numbering of tiles and more robust and flexible rendering algorithm.
+2. Detect and prevent to red numbers being placed next to each other.
+3. Refactored into classes.
+4. Add button to generate a new board.
+
+changeset:   10:557b07a9911e
+user:        Dan Boswell <dan@amygda.la>
+date:        Tue Mar 26 00:32:14 2013 +0900
+
+First cut of a tool to create random catan boards.
+
+Randomizes the tiles and draws them to screen in the correct board shape. The
+algorithm to get the tile positions is hand-adjusted, this needs to be automated
+using math.
