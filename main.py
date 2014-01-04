@@ -10,12 +10,12 @@ TODO: Docstrings and unittests.
 TODO: Images and patterns
 """
 
-import random
-import tkinter
-import math
-import itertools
 import collections
 import functools
+import itertools
+import math
+import random
+import tkinter
 import unittest
 
 
@@ -23,7 +23,7 @@ random.seed()
 
 
 class TkinterOptionWrapper:
-    
+
     """Dynamically hook up the board options to tkinter checkbuttons.
 
     Tkinter checkbuttons use a tkinter 'var' object to store the checkbutton
@@ -42,9 +42,9 @@ class TkinterOptionWrapper:
 
     The wrapper will dynamically update the value of the option in the
     option_dict when the user checks or unchecks the corresponding checkbutton
-    in the UI.    
+    in the UI.
     """
-    
+
     Option = collections.namedtuple('_Option', ['text', 'var', 'callback'])
     _descriptions = {
         'randomize_ports':      'Randomize port types',
@@ -59,7 +59,7 @@ class TkinterOptionWrapper:
         # create a specific callable instance.
         def cb_template(name, var):
             option_dict[name] = var.get()
-        
+
         for name, value in option_dict.items():
             var = tkinter.BooleanVar()
             var.set(value)
@@ -90,7 +90,7 @@ class BoardUI(tkinter.Frame):
         for option in TkinterOptionWrapper(options):
             option.callback()
             tkinter.Checkbutton(cb_frame, text=option.text, command=option.callback, var=option.var) \
-                   .pack(side=tkinter.TOP, fill=tkinter.X)        
+                   .pack(side=tkinter.TOP, fill=tkinter.X)
         cb_frame.pack(side=tkinter.RIGHT, fill=tkinter.Y)
 
         canvas.pack(side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
@@ -111,12 +111,12 @@ class BoardUI(tkinter.Frame):
         last tile and the radius of the hexagons (and padding etc.)
 
         We then shift all the individual tile centers so that the board center
-        is at 0, 0. 
+        is at 0, 0.
         """
-        
+
         centers = {}
-        last    = None
-        
+        last = None
+
         for tile in board.tiles:
             if not last:
                 centers[tile.id] = (0, 0)
@@ -124,10 +124,10 @@ class BoardUI(tkinter.Frame):
                 continue
 
             # Calculate the center of this tile as an offset from the center of
-            # the neighbouring tile in the given direction.
+            # the neighboring tile in the given direction.
             ref_center = centers[last.id]
-            direction  = board.direction(last, tile)
-            theta  = self._angle_order.index(direction) * 60
+            direction = board.direction(last, tile)
+            theta = self._angle_order.index(direction) * 60
             radius = 2 * self._center_to_edge + self._tile_padding
             dx = radius * math.cos(math.radians(theta))
             dy = radius * math.sin(math.radians(theta))
@@ -155,7 +155,7 @@ class BoardUI(tkinter.Frame):
             tile = board.tiles[tile_id - 1]
             self._draw_tile(x, y, tile.terrain, tile.value)
 
-        port_centers = [(x + offx, y + offy, t+180) for x, y, t in port_centers]
+        port_centers = [(x + offx, y + offy, t + 180) for x, y, t in port_centers]
         for (x, y, t), value in zip(port_centers, [v for _, _, v in board.ports]):
             self._draw_port(x, y, t, value)
 
@@ -178,8 +178,8 @@ class BoardUI(tkinter.Frame):
         given by the angle."""
         points = [x, y]
         for adjust in (-30, 30):
-            x1 = x + math.cos(math.radians(angle+adjust)) * self._tile_radius
-            y1 = y + math.sin(math.radians(angle+adjust)) * self._tile_radius
+            x1 = x + math.cos(math.radians(angle + adjust)) * self._tile_radius
+            y1 = y + math.sin(math.radians(angle + adjust)) * self._tile_radius
             points.extend([x1, y1])
         self._canvas.create_polygon(*points, fill=self._colors[value])
         self._canvas.create_text(x, y, text=value, font=self._hex_font)
@@ -188,17 +188,17 @@ class BoardUI(tkinter.Frame):
     _tile_padding = 3
     _board_center = (300, 300)
     _angle_order  = ('E', 'SE', 'SW', 'W', 'NW', 'NE')
-    _hex_font = (('Sans'), 18)
+    _hex_font     = (('Sans'), 18)
     _colors = {
         'M': 'gray94',
         'O': 'gray94',
         'F': 'forest green',
         'L': 'forest green',
         'P': 'green yellow',
-        'W': 'green yellow', # wool
+        'W': 'green yellow',  # wool
         'C': 'sienna4',
         'B': 'sienna4',
-        'H': 'wheat1', # wheat
+        'H': 'wheat1',  # wheat
         'G': 'wheat1',
         'D': 'yellow2',
         '?': 'gray'}
@@ -237,7 +237,7 @@ class Board:
     Board.direction(from, to) gives the compass direction you need to take to
     get from the origin tile to the destination tile.
     """
-    
+
     def __init__(self, options, tiles=None, graph=None, center=1):
         """
         options is a dict names to boolean values.
@@ -245,7 +245,7 @@ class Board:
         different graph for testing purposes.
         """
         self.options = options
-        self.tiles = tiles or self._generate()
+        self.tiles   = tiles or self._generate()
         self.center_tile = self.tiles[center or 10]
         if graph:
             self._graph = graph
@@ -292,31 +292,32 @@ class Board:
     _numbers = [5, 2, 6, 3, 8, 10, 9, 12, 11, 4, 8, 10, 9, 4, 5, 6, 3, 11]
     _ports   = ['?', 'O', 'G', '?', 'L', 'B', '?', '?', 'W']
     # Ore, Wool, Grain, Lumber, Brick
-    _graph   = [( 1,  2, 'SW'), (1,  12, 'E' ), ( 1, 13, 'SE'),
-                ( 2,  3, 'SW'), (2,  13, 'E' ), ( 2, 14, 'SE'),
-                ( 3,  4, 'SE'), (3,  14, 'E' ),
-                ( 4,  5, 'SE'), (4,  14, 'NE'), ( 4, 15, 'E' ),
-                ( 5,  6, 'E' ), (5,  15, 'NE'),
-                ( 6,  7, 'E' ), (6,  15, 'NW'), ( 6, 16, 'NE'),
-                ( 7,  8, 'NE'), (7,  16, 'NW'),
-                ( 8,  9, 'NE'), (8,  16, 'W' ), ( 8, 17, 'NW'),
-                ( 9, 10, 'NW'), (9,  17, 'W' ),
-                (10, 11, 'NW'), (10, 17, 'SW'), (10, 18, 'W' ),
-                (11, 12, 'W' ), (11, 18, 'SW'),
-                (12, 13, 'SW'), (12, 18, 'SE'),
-                (13, 14, 'SW'), (13, 18, 'E' ), (13, 19, 'SE'),
-                (14, 15, 'SE'), (14, 19, 'E' ),
-                (15, 16, 'E' ), (15, 19, 'NE'),
-                (16, 17, 'NE'), (16, 19, 'NW'),
-                (17, 18, 'NW'), (17, 19, 'W' ),
-                (18, 19, 'SW')]
-    _port_locations = [(1, 'NW'), ( 2, 'W' ), ( 4, 'W' ),
-                       (5, 'SW'), ( 6, 'SE'), ( 8, 'SE'),
+    _graph = [(1,  2,  'SW'), (1,  12, 'E' ), (1,  13, 'SE'),
+              (2,  3,  'SW'), (2,  13, 'E' ), (2,  14, 'SE'),
+              (3,  4,  'SE'), (3,  14, 'E' ),
+              (4,  5,  'SE'), (4,  14, 'NE'), (4,  15, 'E' ),
+              (5,  6,  'E' ), (5,  15, 'NE'),
+              (6,  7,  'E' ), (6,  15, 'NW'), (6,  16, 'NE'),
+              (7,  8,  'NE'), (7,  16, 'NW'),
+              (8,  9,  'NE'), (8,  16, 'W' ), (8,  17, 'NW'),
+              (9,  10, 'NW'), (9,  17, 'W' ),
+              (10, 11, 'NW'), (10, 17, 'SW'), (10, 18, 'W' ),
+              (11, 12, 'W' ), (11, 18, 'SW'),
+              (12, 13, 'SW'), (12, 18, 'SE'),
+              (13, 14, 'SW'), (13, 18, 'E' ), (13, 19, 'SE'),
+              (14, 15, 'SE'), (14, 19, 'E' ),
+              (15, 16, 'E' ), (15, 19, 'NE'),
+              (16, 17, 'NE'), (16, 19, 'NW'),
+              (17, 18, 'NW'), (17, 19, 'W' ),
+              (18, 19, 'SW')]
+    _port_locations = [(1, 'NW'), (2,  'W'),  (4,  'W' ),
+                       (5, 'SW'), (6,  'SE'), (8,  'SE'),
                        (9, 'E' ), (10, 'NE'), (12, 'NE')]
 
 _direction_pairs = {
     'E': 'W', 'SW': 'NE', 'SE': 'NW',
     'W': 'E', 'NE': 'SW', 'NW': 'SE'}
+
 
 def invert(edge):
     return (edge[1], edge[0], _direction_pairs[edge[2]])
@@ -334,6 +335,7 @@ def hex_points(radius, offset, rotate):
 
 def main():
     root = tkinter.Tk()
+    root.lift()
     options = {
         'randomize_production': True,
         'randomize_ports': True}
@@ -346,7 +348,5 @@ def main():
 def test():
     unittest.main(exit=False)
 
-
 if __name__ == "__main__":
-##    test()
     main()
