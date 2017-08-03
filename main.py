@@ -10,6 +10,7 @@ TODO: Docstrings and unittests.
 TODO: Images and patterns
 """
 
+from typing import Dict, Iterable, Sequence
 import collections
 import functools
 import itertools
@@ -89,7 +90,10 @@ class BoardUI(tkinter.Frame):
         cb_frame = tkinter.Frame(self)
         for option in TkinterOptionWrapper(options):
             option.callback()
-            tkinter.Checkbutton(cb_frame, text=option.text, command=option.callback, var=option.var) \
+            tkinter.Checkbutton(cb_frame,
+                                text = option.text,
+                                command = option.callback,
+                                var = option.var) \
                    .pack(side=tkinter.TOP, fill=tkinter.X)
         cb_frame.pack(side=tkinter.RIGHT, fill=tkinter.Y)
 
@@ -174,8 +178,9 @@ class BoardUI(tkinter.Frame):
             self._canvas.create_text(x, y, text=str(value), font=self._hex_font, fill=color)
 
     def _draw_port(self, x, y, angle, value):
-        """Draw a equilateral triangle with the top point at x, y and the bottom facing the direction
-        given by the angle."""
+        """Draw a equilateral triangle with the top point at x, y and the bottom
+        facing the direction given by the angle.
+        """
         points = [x, y]
         for adjust in (-30, 30):
             x1 = x + math.cos(math.radians(angle + adjust)) * self._tile_radius
@@ -207,23 +212,6 @@ class BoardUI(tkinter.Frame):
 Tile = collections.namedtuple('Tile', ['id', 'terrain', 'value'])
 
 
-class ClassicBoardTests(unittest.TestCase):
-
-    def test_tile_iterator(self):
-        options = {
-            'randomize_production': False,
-            'randomize_ports': False}
-        board = Board(options)
-        self.assertEqual([t.value for t in board.tiles if t.value], board._numbers)
-        hexes = collections.Counter([t.terrain for t in board.tiles])
-        self.assertEqual(hexes['F'], 4)
-        self.assertEqual(hexes['P'], 4)
-        self.assertEqual(hexes['H'], 4)
-        self.assertEqual(hexes['M'], 3)
-        self.assertEqual(hexes['C'], 3)
-        self.assertEqual(hexes['D'], 1)
-
-
 class Board:
 
     """Represents a single starting game board.
@@ -238,21 +226,21 @@ class Board:
     get from the origin tile to the destination tile.
     """
 
-    def __init__(self, options, tiles=None, graph=None, center=1):
+    def __init__(self, options: Dict[str, bool], tiles=None, graph=None, center=1) -> None:
         """
         options is a dict names to boolean values.
         tiles and graph are for passing in a pre-defined set of tiles or a
         different graph for testing purposes.
         """
         self.options = options
-        self.tiles   = tiles or self._generate()
+        self.tiles = tiles or self._generate()  # type: Sequence[Tile]
         self.center_tile = self.tiles[center or 10]
         if graph:
             self._graph = graph
 
-    def direction(self, from_tile, to_tile):
-        return next(e[2] for e in self._edges_for(from_tile)
-                               if e[1] == to_tile.id)
+    def direction(self, src: Tile, dst: Tile) -> str:
+        return next(e[2] for e in self._edges_for(src)
+                               if e[1] == dst.id)
 
     def neighbors_for(self, tile):
         return [self.tiles[e[1] - 1] for e in self._edges_for(tile)]
@@ -344,9 +332,6 @@ def main():
     ui.draw(Board(options))
     root.mainloop()
 
-
-def test():
-    unittest.main(exit=False)
 
 if __name__ == "__main__":
     main()
